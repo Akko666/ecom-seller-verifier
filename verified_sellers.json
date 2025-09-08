@@ -1,52 +1,67 @@
 [
   {
-    "platform": "amazon",
-    "seller": "Cloudtail India",
+    "platform": "flipkart",
+    "seller": "BTPL",
     "verified": true
   },
   {
     "platform": "flipkart",
-    "seller": "RetailNet",
-    "verified": true
-  },
-  {
-    "platform": "amazon",
-    "seller": "Appario Retail",
+    "seller": "Patpritrade",
     "verified": true
   },
   {
     "platform": "flipkart",
-    "seller": "WS Retail",
-    "verified": true
-  },
-  {
-    "platform": "amazon",
-    "seller": "Omnitech Retail",
+    "seller": "Supercom",
     "verified": true
   },
   {
     "platform": "flipkart",
-    "seller": "Croma Retail",
-    "verified": true
-  },
-  {
-    "platform": "amazon",
-    "seller": "Ecom Express",
+    "seller": "TAMS",
     "verified": true
   },
   {
     "platform": "flipkart",
-    "seller": "Reliance Retail",
-    "verified": true
-  },
-  {
-    "platform": "amazon",
-    "seller": "Future Retail",
+    "seller": "Clientero",
     "verified": true
   },
   {
     "platform": "flipkart",
-    "seller": "BigBasket",
+    "seller": "MPS",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Srasra",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Truene MPD",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Sthenios Ecommerce",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Grahgoods",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Xonight",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Visionstar",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Darshita Etel",
     "verified": true
   }
 ]

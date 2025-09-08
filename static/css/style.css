@@ -1,0 +1,192 @@
+/* --- Global Styles & Color Palette --- */
+:root {
+    --background-color: #f4f6f9; /* Light grey background */
+    --card-bg-color: #ffffff;      /* White for cards and interactive elements */
+    --primary-text-color: #1c1c1e; /* Nearly black for text */
+    --secondary-text-color: #6a6a6e; /* Grey for subtitles and secondary info */
+    --accent-color: #6a11cb;      /* Vibrant purple accent */
+    --accent-gradient: linear-gradient(to right, #6a11cb, #2575fc); /* Gradient for buttons */
+    --border-color: #e1e1e4;      /* Light border color */
+    --shadow-color: rgba(0, 0, 0, 0.05); /* Soft, subtle shadow */
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Poppins', sans-serif;
+    color: var(--primary-text-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Allow header, main, and footer to stack vertically */
+    min-height: 100vh;
+}
+
+/* --- Header / Navigation Bar --- */
+.navbar {
+    background-color: var(--card-bg-color);
+    padding: 15px 40px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.brand-logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* --- Main Content Area --- */
+.main-container {
+    display: flex;
+    flex-grow: 1; /* Allows this section to fill available space */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.verifier-box {
+    width: 100%;
+    max-width: 700px;
+    padding: 40px;
+    background: var(--card-bg-color);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px var(--shadow-color);
+    text-align: center;
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-weight: 300;
+    font-size: 1.1rem;
+    color: var(--secondary-text-color);
+    margin-bottom: 35px;
+}
+
+/* --- Form Elements --- */
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
+#productUrl {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    background: var(--background-color);
+    padding: 18px 20px 18px 50px; /* Add padding for the icon */
+    font-size: 1rem;
+    color: var(--primary-text-color);
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+#productUrl:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+}
+
+.input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-text-color);
+}
+
+#verifyBtn {
+    border: none;
+    background: var(--accent-gradient);
+    color: #fff;
+    padding: 18px 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 12px;
+    margin-top: 20px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#verifyBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+}
+
+#verifyBtn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- Result Display --- */
+.result-container {
+    margin-top: 30px;
+    min-height: 50px;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: left;
+    border: 1px solid transparent;
+}
+
+.alert-info { background-color: #eef2f7; border-color: #a9bcca; color: #3b5d81; }
+.alert-success { background-color: #eaf7ed; border-color: #a4d4b1; color: #3a7d4a; }
+.alert-danger, .alert-warning { background-color: #fdeeee; border-color: #f3c1c1; color: #a94442; }
+
+/* --- Footer --- */
+.footer {
+    background-color: var(--card-bg-color);
+    padding: 20px 40px;
+    text-align: center;
+    color: var(--secondary-text-color);
+    font-size: 0.9rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- Supported Platforms Section --- */
+.supported-platforms {
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+    margin-top: -10px; /* Nudges it closer to the main box */
+    padding: 0 20px;
+}
+
+.supported-platforms h3 {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--secondary-text-color);
+    margin-bottom: 15px;
+}
+
+.platforms-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.platforms-list span {
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+    background-color: #e9e9f0;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
