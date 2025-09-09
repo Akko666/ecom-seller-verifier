@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify, render_template
 import json
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse # NEW: Import for URL validation
+from urllib.parse import urlparse
+import os # Make sure os is imported
 
 app = Flask(__name__)
 
@@ -10,16 +11,13 @@ app = Flask(__name__)
 with open('verified_sellers.json', 'r') as f:
     verified_sellers_data = json.load(f)
 
-# --- NEW: Helper function for URL validation ---
 def validate_url(link):
     """Checks if the URL is valid and from a supported platform."""
     try:
         parsed_url = urlparse(link)
-        # Check for a valid scheme (http/https) and a domain name
         if not all([parsed_url.scheme, parsed_url.netloc]):
             return None, "Invalid URL format. Please enter a full URL (e.g., https://...)."
         
-        # Check for supported platforms
         if 'amazon' in parsed_url.netloc:
             return 'amazon', None
         elif 'flipkart' in parsed_url.netloc:
@@ -39,38 +37,49 @@ def verify():
     if not link:
         return jsonify({'error': 'No link provided.'}), 400
 
-    # --- UPDATED: Use the new validation function ---
     platform, error_message = validate_url(link)
     if error_message:
         return jsonify({'error': error_message}), 400
 
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br'
+        # --- FIX: Load API Key from Render's Environment Variables ---
+        SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY') 
+        
+        if not SCRAPINGBEE_API_KEY:
+            # This error will show if the key isn't set on Render
+            return jsonify({'error': 'API key is not configured on the server.'}), 500
+
+        params = {
+            'api_key': SCRAPINGBEE_API_KEY,
+            'url': link,
+            'premium_proxy': 'true',
+            'country_code': 'in'
         }
-        response = requests.get(link, headers=headers, timeout=10)
-        response.raise_for_status()  # This will raise an HTTPError for bad responses (4xx or 5xx)
+
+        response = requests.get('https://app.scrapingbee.com/api/v1/', params=params, timeout=60)
+        response.raise_for_status()
+
+        if response.status_code != 200:
+            return jsonify({'error': f"Scraping service error: Status {response.status_code}, {response.text}"}), 500
+
         soup = BeautifulSoup(response.text, 'html.parser')
 
         seller_name = None
         if platform == 'amazon':
-            # Updated selectors for better reliability
+            # Amazon selector (seems okay, but let's keep it robust)
             seller_elem = soup.select_one('#merchant-info a span') or soup.select_one('#sellerProfileTriggerId')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
         elif platform == 'flipkart':
-            # Updated selectors for better reliability
-            seller_elem = soup.select_one('._1RLviY a') or soup.select_one('._3_Fivj')
+            # --- FIX: Updated Flipkart Seller Selector ---
+            # Flipkart's seller name is often in a div with a specific ID or class. This is a more reliable selector.
+            seller_elem = soup.select_one('div._3_Fivj a span') or soup.select_one('#sellerName span')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
 
         if not seller_name:
-            # --- UPDATED: More specific error for scraper failure ---
-            return jsonify({'error': 'Seller information not found on the page. The site structure may have changed.'}), 404
+            return jsonify({'error': 'Could not find the seller name on the page. The website structure may have changed.'}), 404
 
-        # Normalize and check against our list
         seller_name_lower = seller_name.lower()
         is_genuine = any(
             s['seller'].lower() == seller_name_lower and s['platform'] == platform
@@ -80,12 +89,14 @@ def verify():
 
         return jsonify({'seller': seller_name, 'result': result_status})
 
-    # --- UPDATED: More specific exception handling ---
+    except requests.exceptions.Timeout:
+        return jsonify({'error': "The request timed out. The website may be slow to respond."}), 500
     except requests.exceptions.RequestException as e:
-        return jsonify({'error': f"Network error: Could not connect to the website."}), 500
+        return jsonify({'error': "Network error: Could not connect to the scraping service."}), 500
     except Exception as e:
-        # Generic catch-all for any other unexpected errors
         return jsonify({'error': f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use port defined by Render, default to 5000 for local testing
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
