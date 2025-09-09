@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 import os
-import re # Import the regular expression module
+import re
 
 app = Flask(__name__)
 
@@ -15,12 +15,10 @@ with open('verified_sellers.json', 'r') as f:
 def clean_and_validate_url(text):
     """
     Extracts, cleans, and validates the first Amazon/Flipkart URL from a text block.
-    This is the Python equivalent of the frontend JavaScript cleaner.
     """
     if not text:
         return None, "URL is empty."
 
-    # Regex to find potential URLs
     url_regex = re.compile(r'https?:\/\/[^\s/$.?#].[^\s]*|www\.[^\s/$.?#].[^\s]*', re.IGNORECASE)
     matches = url_regex.findall(text)
 
@@ -32,12 +30,10 @@ def clean_and_validate_url(text):
             url_string = match if match.startswith('http') else f"https://{match}"
             parsed_url = urlparse(url_string)
 
-            # Check for supported platforms
             hostname = parsed_url.hostname.lower() if parsed_url.hostname else ''
             if 'amazon' not in hostname and 'flipkart' not in hostname:
-                continue # Not a supported platform, try the next match
+                continue
 
-            # Define tracking parameters to remove
             params_to_remove = [
                 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
                 'fbclid', 'gclid', 'ref', 'ref_', 'affid', 'affExtParam1',
@@ -45,21 +41,17 @@ def clean_and_validate_url(text):
             ]
             
             query_params = parse_qs(parsed_url.query)
-            # Filter out the unwanted parameters
             clean_params = {
                 k: v for k, v in query_params.items() 
                 if not any(k.startswith(param) for param in params_to_remove)
             }
 
-            # Reconstruct the URL with cleaned query parameters
-            # Use urlunparse to correctly reassemble the URL components
             url_parts = list(parsed_url)
-            url_parts[4] = urlencode(clean_params, doseq=True) # Index 4 is the query string
+            url_parts[4] = urlencode(clean_params, doseq=True)
             
-            return urlunparse(url_parts), None # Return the cleaned URL and no error
+            return urlunparse(url_parts), None
 
         except Exception:
-            # Ignore malformed URLs and continue
             continue
     
     return None, "Could not find a valid Amazon or Flipkart URL."
@@ -98,16 +90,16 @@ def verify():
 
         seller_name = None
         if platform == 'amazon':
-            seller_elem = soup.select_one('#merchant-info a span') or soup.select_one('#sellerProfileTriggerId')
+            seller_elem = soup.select_one('#merchant-info a span, #sellerProfileTriggerId')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
         elif platform == 'flipkart':
-            seller_elem = soup.select_one('div._3_Fivj a span') or soup.select_one('#sellerName span span')
+            seller_elem = soup.select_one('div._3_Fivj a span, #sellerName span span')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
 
         if not seller_name:
-            return jsonify({'error': 'Could not find the seller name on the page. The website structure may have changed.'}), 404
+            return jsonify({'error': 'Could not find the seller name. The site structure may have changed.'}), 404
 
         scraped_seller_cleaned = seller_name.lower().replace(" ", "")
 
@@ -120,39 +112,36 @@ def verify():
                     break 
 
         if not is_genuine:
-            # --- NEW: Suspicious Seller Logic ---
-            # 1. Extract Product Title
             product_title = None
             if platform == 'amazon':
                 title_elem = soup.select_one('#productTitle')
                 if title_elem:
                     product_title = title_elem.text.strip()
             elif platform == 'flipkart':
-                title_elem = soup.select_one('span.B_NuCI') # Modern Flipkart title selector
+                # --- CORRECTED ROBUST SELECTOR ---
+                title_elem = soup.select_one('h1, span.B_NuCI')
                 if title_elem:
                     product_title = title_elem.text.strip()
             
             product_title = product_title if product_title else 'this product'
 
-            # 2. Detect Brand from Title
+            # --- CORRECTED REGEX BRAND DETECTION ---
             title_lower = product_title.lower()
             detected_brand = None
-            # Map sub-brands/aliases to a primary brand name
             brand_families = {
                 'realme': ['realme'],
                 'samsung': ['samsung'],
-                'xiaomi': ['xiaomi', 'redmi', 'poco'] 
+                'xiaomi': ['xiaomi', 'redmi', 'poco']
             }
 
             for primary_brand, aliases in brand_families.items():
                 for alias in aliases:
-                    if f' {alias} ' in f' {title_lower} ' or title_lower.startswith(alias + ' '):
+                    if re.search(r'\b' + re.escape(alias) + r'\b', title_lower):
                         detected_brand = primary_brand
                         break
                 if detected_brand:
                     break
             
-            # 3. Get Genuine Seller Suggestions
             suggestions = []
             if detected_brand:
                 suggestions = [
@@ -160,13 +149,11 @@ def verify():
                     if s['platform'] == platform and s.get('brands') and detected_brand in s['brands']
                 ]
 
-            # 4. Fallback to general sellers if no brand-specific ones are found
             if not suggestions:
                 suggestions = [
                     s['seller'] for s in verified_sellers_data if s['platform'] == platform
                 ]
             
-            # Limit to 5 unique suggestions
             final_suggestions = list(dict.fromkeys(suggestions))[:5]
 
             return jsonify({
@@ -176,7 +163,6 @@ def verify():
                 'genuine_sellers': final_suggestions if final_suggestions else None
             })
         
-        # --- Original logic for genuine sellers ---
         return jsonify({'seller': seller_name, 'result': 'Genuine'})
 
     except Exception as e:
