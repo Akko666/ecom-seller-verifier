@@ -125,6 +125,8 @@ def verify():
                     break
 
         if not seller_name:
+            with open('debug_page.html', 'w') as f:
+                f.write(response.text)
             return jsonify({'error': 'Could not find the seller name. The site structure may have changed.'}), 404
 
         scraped_seller_cleaned = seller_name.lower().replace(" ", "")
