@@ -102,13 +102,27 @@ def verify():
 
         seller_name = None
         if platform == 'amazon':
-            seller_elem = soup.select_one('#merchant-info a span, #sellerProfileTriggerId')
-            if seller_elem:
-                seller_name = seller_elem.text.strip()
+            amazon_selectors = [
+                '#merchant-info a span',
+                '#sellerProfileTriggerId',
+                '#bylineInfo'
+            ]
+            for selector in amazon_selectors:
+                seller_elem = soup.select_one(selector)
+                if seller_elem:
+                    seller_name = seller_elem.text.strip()
+                    break
         elif platform == 'flipkart':
-            seller_elem = soup.select_one('div._3_Fivj a span, #sellerName span span')
-            if seller_elem:
-                seller_name = seller_elem.text.strip()
+            flipkart_selectors = [
+                'div._3_Fivj a span',
+                '#sellerName span span',
+                '._1_s5TU'
+            ]
+            for selector in flipkart_selectors:
+                seller_elem = soup.select_one(selector)
+                if seller_elem:
+                    seller_name = seller_elem.text.strip()
+                    break
 
         if not seller_name:
             return jsonify({'error': 'Could not find the seller name. The site structure may have changed.'}), 404
