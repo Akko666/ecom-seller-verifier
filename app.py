@@ -128,7 +128,7 @@ def verify():
                 if title_elem:
                     product_title = title_elem.text.strip()
             elif platform == 'flipkart':
-                title_elem = soup.select_one('h1 span.B_NuCI, h1._35KyD6') # More robust Flipkart title selector
+                title_elem = soup.select_one('h1, span.B_NuCI') # More robust Flipkart title selector
                 if title_elem:
                     product_title = title_elem.text.strip()
             
@@ -137,16 +137,16 @@ def verify():
             # 2. Detect Brand from Title
             title_lower = product_title.lower()
             detected_brand = None
-            # Map sub-brands/aliases to a primary brand name
             brand_families = {
                 'realme': ['realme'],
                 'samsung': ['samsung'],
-                'xiaomi': ['xiaomi', 'redmi', 'poco'] 
+                'xiaomi': ['xiaomi', 'redmi', 'poco']
             }
 
             for primary_brand, aliases in brand_families.items():
                 for alias in aliases:
-                    if f' {alias} ' in f' {title_lower} ' or title_lower.startswith(alias + ' '):
+                    # Use regex for a robust word boundary search
+                    if re.search(r'\b' + re.escape(alias) + r'\b', title_lower):
                         detected_brand = primary_brand
                         break
                 if detected_brand:
