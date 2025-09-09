@@ -65,16 +65,22 @@ def home():
 @app.route('/verify', methods=['POST'])
 def verify():
     link = request.json.get('link')
-    
-    cleaned_link, error_message = clean_and_validate_url(link)
-    
+
+    try:
+        response = requests.head(link, allow_redirects=True)
+        expanded_url = response.url
+    except Exception as e:
+        return jsonify({'error': 'Failed to expand URL'}), 400
+
+    cleaned_link, error_message = clean_and_validate_url(expanded_url)
+
     if error_message:
         return jsonify({'error': error_message}), 400
 
     platform = 'amazon' if 'amazon' in urlparse(cleaned_link).hostname else 'flipkart'
 
     try:
-        SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY') 
+        SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY')
         if not SCRAPINGBEE_API_KEY:
             return jsonify({'error': 'API key is not configured on the server.'}), 500
 
@@ -109,7 +115,7 @@ def verify():
                 verified_seller_cleaned = s['seller'].lower().replace(" ", "")
                 if scraped_seller_cleaned.startswith(verified_seller_cleaned):
                     is_genuine = True
-                    break 
+                    break
 
         if not is_genuine:
             product_title = None
@@ -122,7 +128,7 @@ def verify():
                 title_elem = soup.select_one('h1, span.B_NuCI')
                 if title_elem:
                     product_title = title_elem.text.strip()
-            
+
             product_title = product_title if product_title else 'this product'
 
             # --- CORRECTED REGEX BRAND DETECTION ---
@@ -141,7 +147,7 @@ def verify():
                         break
                 if detected_brand:
                     break
-            
+
             suggestions = []
             if detected_brand:
                 suggestions = [
@@ -153,7 +159,7 @@ def verify():
                 suggestions = [
                     s['seller'] for s in verified_sellers_data if s['platform'] == platform
                 ]
-            
+
             final_suggestions = list(dict.fromkeys(suggestions))[:5]
 
             return jsonify({
@@ -162,11 +168,11 @@ def verify():
                 'product_title': product_title,
                 'genuine_sellers': final_suggestions if final_suggestions else None
             })
-        
+
         return jsonify({'seller': seller_name, 'result': 'Genuine'})
 
     except Exception as e:
-        print(f"--- ERROR OCCURRED ---: {str(e)}") 
+        print(f"--- ERROR OCCURRED ---: {str(e)}")
         return jsonify({'error': f"An unexpected error occurred while processing the link."}), 500
 
 if __name__ == '__main__':
