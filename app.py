@@ -41,9 +41,6 @@ def verify():
     if error_message:
         return jsonify({'error': error_message}), 400
 
-    print("--- NEW VERIFICATION REQUEST ---") # Log Start
-    print(f"Platform identified: {platform}")
-
     try:
         SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY') 
         if not SCRAPINGBEE_API_KEY:
@@ -69,30 +66,24 @@ def verify():
             if seller_elem:
                 seller_name = seller_elem.text.strip()
 
-        print(f"1. Scraped raw seller name: '{seller_name}'") # Log Raw Name
-
         if not seller_name:
             return jsonify({'error': 'Could not find the seller name on the page. The website structure may have changed.'}), 404
 
         scraped_seller_cleaned = seller_name.lower().replace(" ", "")
-        print(f"2. Cleaned scraped name: '{scraped_seller_cleaned}'") # Log Cleaned Scraped Name
 
         is_genuine = False
         for s in verified_sellers_data:
             if s['platform'] == platform:
                 verified_seller_cleaned = s['seller'].lower().replace(" ", "")
-                print(f"-> Comparing with DB entry: '{verified_seller_cleaned}'") # Log DB Name
                 if scraped_seller_cleaned.startswith(verified_seller_cleaned):
-                    print("!!! MATCH FOUND !!!") # Log Match
                     is_genuine = True
                     break 
 
-        print(f"3. Final determination: is_genuine = {is_genuine}") # Log Final Result
         result_status = 'Genuine' if is_genuine else 'Suspicious'
         return jsonify({'seller': seller_name, 'result': result_status})
 
     except Exception as e:
-        print(f"--- ERROR OCCURRED ---: {str(e)}") # Log Errors
+        print(f"--- ERROR OCCURRED ---: {str(e)}") 
         return jsonify({'error': f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
