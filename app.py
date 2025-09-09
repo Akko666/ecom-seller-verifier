@@ -80,11 +80,22 @@ def verify():
         if not seller_name:
             return jsonify({'error': 'Could not find the seller name on the page. The website structure may have changed.'}), 404
 
-        seller_name_lower = seller_name.lower()
-        is_genuine = any(
-            s['seller'].lower() == seller_name_lower and s['platform'] == platform
-            for s in verified_sellers_data
-        )
+        # --- FIX: More flexible seller name matching ---
+        
+        # 1. Clean the scraped seller name by removing spaces and making it lowercase.
+        scraped_seller_cleaned = seller_name.lower().replace(" ", "")
+
+        # 2. Loop through our verified list to find a match.
+        is_genuine = False
+        for s in verified_sellers_data:
+            # Clean the seller name from our JSON file
+            verified_seller_cleaned = s['seller'].lower().replace(" ", "")
+            
+            # Check if the platform matches AND if the scraped name STARTS WITH our verified name
+            if s['platform'] == platform and scraped_seller_cleaned.startswith(verified_seller_cleaned):
+                is_genuine = True
+                break # We found a match, so we can stop checking.
+
         result_status = 'Genuine' if is_genuine else 'Suspicious'
 
         return jsonify({'seller': seller_name, 'result': result_status})
