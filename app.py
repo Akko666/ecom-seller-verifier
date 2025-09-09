@@ -31,7 +31,8 @@ def clean_and_validate_url(text):
             parsed_url = urlparse(url_string)
 
             hostname = parsed_url.hostname.lower() if parsed_url.hostname else ''
-            if 'amazon' not in hostname and 'flipkart' not in hostname:
+            # --- MODIFIED LINE ---
+            if not ('amazon' in hostname or 'amzn' in hostname or 'flipkart' in hostname):
                 continue
 
             params_to_remove = [
