@@ -128,7 +128,7 @@ def verify():
                 if title_elem:
                     product_title = title_elem.text.strip()
             elif platform == 'flipkart':
-                title_elem = soup.select_one('span.B_NuCI') # Modern Flipkart title selector
+                title_elem = soup.select_one('h1 span.B_NuCI, h1._35KyD6') # More robust Flipkart title selector
                 if title_elem:
                     product_title = title_elem.text.strip()
             
