@@ -51,7 +51,6 @@
     </footer>
 
     <script>
-        // Your JavaScript logic remains the same. No changes needed.
         const form = document.getElementById('verifyForm');
         const resultDiv = document.getElementById('result');
         const urlInput = document.getElementById('productUrl');
@@ -59,7 +58,7 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            resultDiv.innerHTML = '<div class="alert alert-info">Verifying... Please wait.</div>';
+            resultDiv.innerHTML = '<div class="alert alert-info">Verifying... This may take a moment.</div>';
             verifyBtn.disabled = true;
             const link = urlInput.value;
 
@@ -76,8 +75,35 @@
                     throw new Error(data.error || `HTTP error! status: ${response.status}`);
                 }
                 
-                const alertClass = data.result === 'Genuine' ? 'alert-success' : 'alert-danger';
-                resultDiv.innerHTML = `<div class="alert ${alertClass}"><strong>${data.seller}</strong> is a <strong>${data.result}</strong> seller.</div>`;
+                // --- NEW: Handle different response types ---
+                if (data.result === 'Genuine') {
+                    resultDiv.innerHTML = `<div class="alert alert-success"><strong>${data.seller}</strong> is a <strong>Genuine</strong> seller.</div>`;
+                } else if (data.result === 'Suspicious') {
+                    let suggestionsHTML = '';
+                    // Check if the backend provided a list of sellers
+                    if (data.genuine_sellers && data.genuine_sellers.length > 0) {
+                        let sellersList = data.genuine_sellers.map(s => `<li>${s}</li>`).join('');
+                        suggestionsHTML = `
+                            <div class="alert alert-info" style="margin-top: 15px; text-align: left;">
+                                <p style="margin-bottom: 10px;">For "<strong>${data.product_title}</strong>", we recommend buying from these verified sellers:</p>
+                                <ul style="padding-left: 20px;">${sellersList}</ul>
+                                <p style="margin-top: 10px; font-size: 0.9em;">You can search for the product on the e-commerce site and find it from one of these sellers.</p>
+                            </div>
+                        `;
+                    } else {
+                        // Fallback message if no sellers are recommended
+                        suggestionsHTML = `
+                            <div class="alert alert-info" style="margin-top: 15px; text-align: left;">
+                                <p>We could not find specific verified sellers for this product in our database. Please exercise caution when purchasing.</p>
+                            </div>
+                        `;
+                    }
+
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger"><strong>${data.seller}</strong> is a <strong>Suspicious</strong> seller.</div>
+                        ${suggestionsHTML}
+                    `;
+                }
 
             } catch (err) {
                 resultDiv.innerHTML = `<div class="alert alert-warning">Error: ${err.message}</div>`;

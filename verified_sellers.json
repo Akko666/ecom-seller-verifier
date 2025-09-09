@@ -2,181 +2,218 @@
   {
     "platform": "flipkart",
     "seller": "BTPL",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Patpritrade",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Supercom",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "TAMS",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Clientero",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "MPS",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Srasra",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Truene MPD",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Sthenios Ecommerce",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Grahgoods",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Xonight",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "flipkart",
     "seller": "Visionstar",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme"]
   },
   {
     "platform": "amazon",
     "seller": "Darshita Etel",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["realme", "samsung"]
   },
   {
     "platform": "flipkart",
     "seller": "TrueCom Retail",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["samsung"]
   },
   {
     "platform": "flipkart",
     "seller": "Mythanglory Retail",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["samsung"]
   },
   {
     "platform": "flipkart",
     "seller": "BTPLD",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["samsung"]
   },
   {
     "platform": "flipkart",
     "seller": "Flashstar Commerce",
-    "verified": true
-  },
-  {
-    "platform": "flipkart",
-    "seller": "Buzz India",
-    "verified": true
-  },
-  {
-    "platform": "flipkart",
-    "seller": "SV Peripherals",
-    "verified": true
-  },
-  {
-    "platform": "flipkart",
-    "seller": "Unique Click",
-    "verified": true
-  },
-  {
-    "platform": "flipkart",
-    "seller": "India Flash Mart",
-    "verified": true
-  },
-  {
-    "platform": "flipkart",
-    "seller": "Retailnet",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["samsung"]
   },
   {
     "platform": "amazon",
     "seller": "Clicktech Retail",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["samsung", "xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "STPL Exclusive",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["samsung"]
   },
   {
     "platform": "flipkart",
     "seller": "Mythanglory",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "flipkart",
     "seller": "Akshnav",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "flipkart",
     "seller": "TreasureEVERretailer",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "flipkart",
     "seller": "RetailNet",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "flipkart",
     "seller": "OmniTechRetail",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "flipkart",
     "seller": "MTAILMODEECOM",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "Darshita Mobiles",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "Green Mobiles",
-    "verified": true
+    "verified": true,
+    "category": "mobiles",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "Dawntech Electronics",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "Cocoblu Retail",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "Kay Kay Overseas Corporation",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   },
   {
     "platform": "amazon",
     "seller": "Retailez",
-    "verified": true
+    "verified": true,
+    "category": "electronics",
+    "brands": ["xiaomi"]
   }
 ]

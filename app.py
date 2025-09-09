@@ -69,19 +69,17 @@ def clean_and_validate_url(text):
 def home():
     return render_template('index.html')
 
+
 @app.route('/verify', methods=['POST'])
 def verify():
     link = request.json.get('link')
     
-    # --- NEW: Server-side cleaning and validation ---
     cleaned_link, error_message = clean_and_validate_url(link)
     
     if error_message:
         return jsonify({'error': error_message}), 400
 
-    # The platform is now derived from the cleaned URL's hostname
     platform = 'amazon' if 'amazon' in urlparse(cleaned_link).hostname else 'flipkart'
-    # --- END NEW ---
 
     try:
         SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY') 
@@ -90,7 +88,7 @@ def verify():
 
         params = {
             'api_key': SCRAPINGBEE_API_KEY,
-            'url': cleaned_link, # Use the cleaned link for scraping
+            'url': cleaned_link,
             'premium_proxy': 'true',
             'country_code': 'in'
         }
@@ -100,12 +98,10 @@ def verify():
 
         seller_name = None
         if platform == 'amazon':
-            # Updated selector for better reliability
             seller_elem = soup.select_one('#merchant-info a span') or soup.select_one('#sellerProfileTriggerId')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
         elif platform == 'flipkart':
-            # Updated selector for better reliability
             seller_elem = soup.select_one('div._3_Fivj a span') or soup.select_one('#sellerName span span')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
@@ -123,8 +119,57 @@ def verify():
                     is_genuine = True
                     break 
 
-        result_status = 'Genuine' if is_genuine else 'Suspicious'
-        return jsonify({'seller': seller_name, 'result': result_status})
+        if not is_genuine:
+            # --- NEW: Suspicious Seller Logic ---
+            # 1. Extract Product Title
+            product_title = None
+            if platform == 'amazon':
+                title_elem = soup.select_one('#productTitle')
+                if title_elem:
+                    product_title = title_elem.text.strip()
+            elif platform == 'flipkart':
+                title_elem = soup.select_one('span.B_NuCI') # Modern Flipkart title selector
+                if title_elem:
+                    product_title = title_elem.text.strip()
+            
+            product_title = product_title if product_title else 'this product'
+
+            # 2. Detect Brand from Title
+            title_lower = product_title.lower()
+            detected_brand = None
+            # Expand this list with more brands over time
+            known_brands = ['realme', 'samsung', 'xiaomi', 'redmi'] 
+            for brand in known_brands:
+                if brand in title_lower:
+                    detected_brand = brand
+                    break
+            
+            # 3. Get Genuine Seller Suggestions
+            suggestions = []
+            if detected_brand:
+                suggestions = [
+                    s['seller'] for s in verified_sellers_data
+                    if s['platform'] == platform and s.get('brands') and detected_brand in s['brands']
+                ]
+
+            # 4. Fallback to general sellers if no brand-specific ones are found
+            if not suggestions:
+                suggestions = [
+                    s['seller'] for s in verified_sellers_data if s['platform'] == platform
+                ]
+            
+            # Limit to 5 unique suggestions
+            final_suggestions = list(dict.fromkeys(suggestions))[:5]
+
+            return jsonify({
+                'seller': seller_name,
+                'result': 'Suspicious',
+                'product_title': product_title,
+                'genuine_sellers': final_suggestions if final_suggestions else None
+            })
+        
+        # --- Original logic for genuine sellers ---
+        return jsonify({'seller': seller_name, 'result': 'Genuine'})
 
     except Exception as e:
         print(f"--- ERROR OCCURRED ---: {str(e)}") 
