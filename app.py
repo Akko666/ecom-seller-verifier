@@ -41,12 +41,12 @@ def verify():
     if error_message:
         return jsonify({'error': error_message}), 400
 
+    print("--- NEW VERIFICATION REQUEST ---") # Log Start
+    print(f"Platform identified: {platform}")
+
     try:
-        # --- FIX: Load API Key from Render's Environment Variables ---
         SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY') 
-        
         if not SCRAPINGBEE_API_KEY:
-            # This error will show if the key isn't set on Render
             return jsonify({'error': 'API key is not configured on the server.'}), 500
 
         params = {
@@ -55,56 +55,44 @@ def verify():
             'premium_proxy': 'true',
             'country_code': 'in'
         }
-
         response = requests.get('https://app.scrapingbee.com/api/v1/', params=params, timeout=60)
         response.raise_for_status()
-
-        if response.status_code != 200:
-            return jsonify({'error': f"Scraping service error: Status {response.status_code}, {response.text}"}), 500
-
         soup = BeautifulSoup(response.text, 'html.parser')
 
         seller_name = None
         if platform == 'amazon':
-            # Amazon selector (seems okay, but let's keep it robust)
             seller_elem = soup.select_one('#merchant-info a span') or soup.select_one('#sellerProfileTriggerId')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
         elif platform == 'flipkart':
-            # --- FIX: Updated Flipkart Seller Selector ---
-            # Flipkart's seller name is often in a div with a specific ID or class. This is a more reliable selector.
             seller_elem = soup.select_one('div._3_Fivj a span') or soup.select_one('#sellerName span')
             if seller_elem:
                 seller_name = seller_elem.text.strip()
 
+        print(f"1. Scraped raw seller name: '{seller_name}'") # Log Raw Name
+
         if not seller_name:
             return jsonify({'error': 'Could not find the seller name on the page. The website structure may have changed.'}), 404
 
-        # --- FIX: More flexible seller name matching ---
-        
-        # 1. Clean the scraped seller name by removing spaces and making it lowercase.
         scraped_seller_cleaned = seller_name.lower().replace(" ", "")
+        print(f"2. Cleaned scraped name: '{scraped_seller_cleaned}'") # Log Cleaned Scraped Name
 
-        # 2. Loop through our verified list to find a match.
         is_genuine = False
         for s in verified_sellers_data:
-            # Clean the seller name from our JSON file
-            verified_seller_cleaned = s['seller'].lower().replace(" ", "")
-            
-            # Check if the platform matches AND if the scraped name STARTS WITH our verified name
-            if s['platform'] == platform and scraped_seller_cleaned.startswith(verified_seller_cleaned):
-                is_genuine = True
-                break # We found a match, so we can stop checking.
+            if s['platform'] == platform:
+                verified_seller_cleaned = s['seller'].lower().replace(" ", "")
+                print(f"-> Comparing with DB entry: '{verified_seller_cleaned}'") # Log DB Name
+                if scraped_seller_cleaned.startswith(verified_seller_cleaned):
+                    print("!!! MATCH FOUND !!!") # Log Match
+                    is_genuine = True
+                    break 
 
+        print(f"3. Final determination: is_genuine = {is_genuine}") # Log Final Result
         result_status = 'Genuine' if is_genuine else 'Suspicious'
-
         return jsonify({'seller': seller_name, 'result': result_status})
 
-    except requests.exceptions.Timeout:
-        return jsonify({'error': "The request timed out. The website may be slow to respond."}), 500
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': "Network error: Could not connect to the scraping service."}), 500
     except Exception as e:
+        print(f"--- ERROR OCCURRED ---: {str(e)}") # Log Errors
         return jsonify({'error': f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
