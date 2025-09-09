@@ -63,5 +63,120 @@
     "platform": "amazon",
     "seller": "Darshita Etel",
     "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "TrueCom Retail",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Mythanglory Retail",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "BTPLD",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Flashstar Commerce",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Buzz India",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "SV Peripherals",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Unique Click",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "India Flash Mart",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Retailnet",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Clicktech Retail",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "STPL Exclusive",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Mythanglory",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "Akshnav",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "TreasureEVERretailer",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "RetailNet",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "OmniTechRetail",
+    "verified": true
+  },
+  {
+    "platform": "flipkart",
+    "seller": "MTAILMODEECOM",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Darshita Mobiles",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Green Mobiles",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Dawntech Electronics",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Cocoblu Retail",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Kay Kay Overseas Corporation",
+    "verified": true
+  },
+  {
+    "platform": "amazon",
+    "seller": "Retailez",
+    "verified": true
   }
 ]
