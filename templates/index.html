@@ -87,5 +87,98 @@
         });
     </script>
 
+<script>
+    /**
+     * E-commerce Link Cleaner
+     * This script automatically cleans product URLs pasted into the input field.
+     * It extracts the first valid Amazon or Flipkart URL from pasted text,
+     * normalizes it, removes common tracking parameters, and updates the input.
+     * This ensures the backend receives a clean, processable URL.
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+        // Find the target input element using a robust query selector.
+        const productUrlInput = document.querySelector('#productUrl, input[name="url"], input[type="url"], .product-url');
+
+        if (!productUrlInput) {
+            console.warn('VerifySeller: Could not find the product URL input field.');
+            return;
+        }
+
+        /**
+         * Extracts and cleans the first valid Amazon/Flipkart URL from a block of text.
+         * @param {string} text The text to parse.
+         * @returns {string|null} The cleaned URL or null if no valid URL is found.
+         */
+        const extractCleanProductUrl = (text) => {
+            // Regex to find potential URLs, including those without a scheme.
+            const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*|www\.[^\s/$.?#].[^\s]*/gi;
+            const matches = text.match(urlRegex);
+
+            if (!matches) {
+                return null;
+            }
+
+            for (const match of matches) {
+                try {
+                    // Prepend https:// if the scheme is missing (e.g., for 'www.amazon.in...').
+                    let urlString = match.startsWith('http') ? match : `https://${match}`;
+                    const url = new URL(urlString);
+
+                    // Check if it's a supported domain.
+                    const isSupported = url.hostname.includes('amazon') || url.hostname.includes('flipkart');
+                    if (!isSupported) {
+                        continue; // Skip to the next match if not a supported platform.
+                    }
+
+                    // Define tracking parameters to remove.
+                    const paramsToRemove = [
+                        'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
+                        'fbclid', 'gclid', 'ref', 'ref_', 'affid', 'affExtParam1',
+                        'smid', '_encoding', 'psc'
+                    ];
+
+                    // Rebuild search parameters, excluding the ones to be removed.
+                    const cleanParams = new URLSearchParams();
+                    for (const [key, value] of url.searchParams.entries()) {
+                        if (!paramsToRemove.some(param => key.startsWith(param))) {
+                            cleanParams.set(key, value);
+                        }
+                    }
+
+                    // Construct the final, clean URL.
+                    url.search = cleanParams.toString();
+                    return url.toString();
+
+                } catch (e) {
+                    // Ignore parsing errors and continue to the next potential URL.
+                    continue;
+                }
+            }
+            return null; // No valid, supported URL found.
+        };
+
+        // Attach the paste event listener.
+        productUrlInput.addEventListener('paste', (event) => {
+            // Use setTimeout to allow the pasted content to be inserted into the input first.
+            setTimeout(() => {
+                const pastedText = productUrlInput.value;
+                const cleanedUrl = extractCleanProductUrl(pastedText);
+
+                if (cleanedUrl) {
+                    // Replace the input's content with the clean URL.
+                    productUrlInput.value = cleanedUrl;
+                    
+                    // Dispatch events so that any other JS frameworks or listeners detect the change.
+                    productUrlInput.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+                    productUrlInput.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+                } else {
+                    // Optional: Provide a non-intrusive hint if no valid URL was found.
+                    productUrlInput.setAttribute('data-paste-status', 'no-valid-url-found');
+                    console.log('VerifySeller: No cleanable product URL found in pasted content.');
+                }
+            }, 0); // The zero-delay timeout pushes this task to the end of the execution queue.
+        });
+    });
+</script>
 </body>
 </html>
