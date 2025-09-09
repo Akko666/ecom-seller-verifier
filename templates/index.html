@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Verification Hub</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=1.1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -70,17 +70,16 @@
                 });
 
                 const data = await response.json();
+                console.log('API Response:', data); // --- DEBUG: Log the response from the backend ---
 
                 if (!response.ok) {
                     throw new Error(data.error || `HTTP error! status: ${response.status}`);
                 }
                 
-                // --- NEW: Handle different response types ---
                 if (data.result === 'Genuine') {
                     resultDiv.innerHTML = `<div class="alert alert-success"><strong>${data.seller}</strong> is a <strong>Genuine</strong> seller.</div>`;
                 } else if (data.result === 'Suspicious') {
                     let suggestionsHTML = '';
-                    // Check if the backend provided a list of sellers
                     if (data.genuine_sellers && data.genuine_sellers.length > 0) {
                         let sellersList = data.genuine_sellers.map(s => `<li>${s}</li>`).join('');
                         suggestionsHTML = `
@@ -91,7 +90,6 @@
                             </div>
                         `;
                     } else {
-                        // Fallback message if no sellers are recommended
                         suggestionsHTML = `
                             <div class="alert alert-info" style="margin-top: 15px; text-align: left;">
                                 <p>We could not find specific verified sellers for this product in our database. Please exercise caution when purchasing.</p>
@@ -106,6 +104,7 @@
                 }
 
             } catch (err) {
+                console.error('Fetch Error:', err); // --- DEBUG: Log any fetch errors ---
                 resultDiv.innerHTML = `<div class="alert alert-warning">Error: ${err.message}</div>`;
             } finally {
                 verifyBtn.disabled = false;
