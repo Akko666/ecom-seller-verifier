@@ -79,6 +79,11 @@ def verify():
 
     platform = 'amazon' if 'amazon' in urlparse(cleaned_link).hostname else 'flipkart'
 
+    if platform == 'amazon':
+        parsed = urlparse(cleaned_link)
+        if '/dp/' not in parsed.path and '/gp/' not in parsed.path:
+            return jsonify({'error': 'This appears to be a category page. Please provide a direct link to a product.'}), 400
+
     try:
         SCRAPINGBEE_API_KEY = os.environ.get('SCRAPINGBEE_API_KEY')
         if not SCRAPINGBEE_API_KEY:
