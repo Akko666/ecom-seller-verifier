@@ -137,11 +137,19 @@ def verify():
             # 2. Detect Brand from Title
             title_lower = product_title.lower()
             detected_brand = None
-            # Expand this list with more brands over time
-            known_brands = ['realme', 'samsung', 'xiaomi', 'redmi'] 
-            for brand in known_brands:
-                if brand in title_lower:
-                    detected_brand = brand
+            # Map sub-brands/aliases to a primary brand name
+            brand_families = {
+                'realme': ['realme'],
+                'samsung': ['samsung'],
+                'xiaomi': ['xiaomi', 'redmi', 'poco'] 
+            }
+
+            for primary_brand, aliases in brand_families.items():
+                for alias in aliases:
+                    if f' {alias} ' in f' {title_lower} ' or title_lower.startswith(alias + ' '):
+                        detected_brand = primary_brand
+                        break
+                if detected_brand:
                     break
             
             # 3. Get Genuine Seller Suggestions
